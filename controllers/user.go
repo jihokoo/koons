@@ -33,6 +33,8 @@ func usersHandler(cb1 func(r *http.Request) *models.User, cb2 func(r *http.Reque
   }
 }
 
+// TODO: add go routines, channels, locks
+
 func GenericHandler(w http.ResponseWriter, r *http.Request) {
   fmt.Fprintf(w, "Whats up breh?")
 }
@@ -71,6 +73,7 @@ func CreateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) 
         log.Fatal(readError)
     }
 
+    // TODO: validations
     var user *models.User
     jsError := json.Unmarshal(body, &user)
     if jsError != nil {
@@ -81,6 +84,55 @@ func CreateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) 
     if dbError != nil {
       log.Fatal(dbError)
     }
+
+    return user
+  }, nil)
+}
+
+func UpdateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) {
+  return usersHandler(func(r *http.Request) *models.User {
+    body, readError := ioutil.ReadAll(r.Body)
+    if readError != nil {
+        log.Fatal(readError)
+    }
+
+    // TODO: validations
+    var user *models.User
+    jsError := json.Unmarshal(body, &user)
+    if jsError != nil {
+        log.Fatal(jsError)
+    }
+
+    // count, dbError
+    _, dbError := dbmap.Update(user)
+    if dbError != nil {
+      log.Fatal(dbError)
+    }
+
+    return user
+  }, nil)
+}
+
+func DeleteUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) {
+  return usersHandler(func(r *http.Request) *models.User {
+    body, readError := ioutil.ReadAll(r.Body)
+    if readError != nil {
+        log.Fatal(readError)
+    }
+
+    // TODO: validations
+    var user *models.User
+    jsError := json.Unmarshal(body, &user)
+    if jsError != nil {
+        log.Fatal(jsError)
+    }
+
+    // count, dbError
+    _, dbError := dbmap.Delete(user)
+    if dbError != nil {
+      log.Fatal(dbError)
+    }
+    user = nil
 
     return user
   }, nil)
