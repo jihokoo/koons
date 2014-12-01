@@ -6,9 +6,11 @@ import (
   "fmt"
   "../models"
   "log"
-  // "time"
+  "time"
   "io/ioutil"
+  "github.com/gorilla/mux"
   "github.com/coopernurse/gorp"
+  "strconv"
 )
 
 func usersHandler(cb1 func(r *http.Request) *models.User, cb2 func(r *http.Request) *[]models.User) func(w http.ResponseWriter, r*http.Request) {
@@ -56,29 +58,37 @@ func GetAllUsers(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request)
 func GetUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) {
 
   return usersHandler(func(r *http.Request) *models.User  {
-    user, dbError := dbmap.Get(models.User{}, 1)
+
+    userId := mux.Vars(r)["userId"]
+
+    var user models.User
+    dbError := dbmap.SelectOne(&user, "select * from \"user\" where id=$1", userId)
     if dbError != nil {
       log.Fatal(dbError)
     }
 
-    return user.(*models.User)
+    return &user
   }, nil)
 }
 
 func CreateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) {
 
   return usersHandler(func(r *http.Request) *models.User {
+
     body, readError := ioutil.ReadAll(r.Body)
     if readError != nil {
-        log.Fatal(readError)
+      log.Fatal(readError)
     }
 
     // TODO: validations
     var user *models.User
     jsError := json.Unmarshal(body, &user)
     if jsError != nil {
-        log.Fatal(jsError)
+      log.Fatal(jsError)
     }
+
+    user.Created = time.Now().Unix()
+    user.Updated = time.Now().Unix()
 
     dbError := dbmap.Insert(user)
     if dbError != nil {
@@ -90,7 +100,10 @@ func CreateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) 
 }
 
 func UpdateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) {
+
   return usersHandler(func(r *http.Request) *models.User {
+
+    userId := mux.Vars(r)["userId"]
     body, readError := ioutil.ReadAll(r.Body)
     if readError != nil {
         log.Fatal(readError)
@@ -101,6 +114,13 @@ func UpdateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) 
     jsError := json.Unmarshal(body, &user)
     if jsError != nil {
         log.Fatal(jsError)
+    }
+
+    user.Updated = time.Now().Unix()
+    var strError error
+    user.Id, strError = strconv.ParseInt(userId, 10, 64)
+    if strError != nil {
+      log.Fatal(strError)
     }
 
     // count, dbError
@@ -114,25 +134,18 @@ func UpdateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) 
 }
 
 func DeleteUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) {
-  return usersHandler(func(r *http.Request) *models.User {
-    body, readError := ioutil.ReadAll(r.Body)
-    if readError != nil {
-        log.Fatal(readError)
-    }
 
-    // TODO: validations
-    var user *models.User
-    jsError := json.Unmarshal(body, &user)
-    if jsError != nil {
-        log.Fatal(jsError)
-    }
+  return usersHandler(func(r *http.Request) *models.User {
+
+    userId := mux.Vars(r)["userId"]
 
     // count, dbError
-    _, dbError := dbmap.Delete(user)
+    _, dbError := dbmap.Exec("delete from \"user\" where id=$1", userId)
     if dbError != nil {
       log.Fatal(dbError)
     }
-    user = nil
+
+    var user *models.User = nil
 
     return user
   }, nil)
