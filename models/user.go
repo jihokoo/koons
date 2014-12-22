@@ -8,4 +8,5 @@ type User struct {
   UserName string
   FirstName string
   LastName string
+  // TODO: hash password
 }

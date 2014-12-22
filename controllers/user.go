@@ -3,7 +3,6 @@ package controllers
 import (
   "net/http"
   "encoding/json"
-  "fmt"
   "../models"
   "log"
   "time"
@@ -36,10 +35,6 @@ func usersHandler(cb1 func(r *http.Request) *models.User, cb2 func(r *http.Reque
 }
 
 // TODO: add go routines, channels, locks
-
-func GenericHandler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "Whats up breh?")
-}
 
 func GetAllUsers(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) {
 
@@ -87,8 +82,9 @@ func CreateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) 
       log.Fatal(jsError)
     }
 
-    user.Created = time.Now().Unix()
-    user.Updated = time.Now().Unix()
+    var currentTime int64 = time.Now().Unix()
+    user.Created = currentTime
+    user.Updated = currentTime
 
     dbError := dbmap.Insert(user)
     if dbError != nil {

@@ -13,7 +13,7 @@ func RegisterIndexRoutes(r *mux.Router) {
 }
 
 func RegisterUserRoutes(r *mux.Router, dbmap *gorp.DbMap) {
-  r.Methods("QUERY").HandlerFunc(controllers.GetAllUsers(dbmap))
+  r.Methods("GET").HandlerFunc(controllers.GetAllUsers(dbmap))
   r.Methods("GET").Path("/{userId}").HandlerFunc( controllers.GetUser(dbmap) )
   r.Methods("POST").HandlerFunc( controllers.CreateUser(dbmap) )
   r.Methods("PUT").Path("/{userId}").HandlerFunc(controllers.UpdateUser(dbmap))
