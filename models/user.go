@@ -13,7 +13,7 @@ type User struct {
   UserName string
   FirstName string
   LastName string
-  Password []byte
+  PasswordHash []byte
   // TODO: hash password
 }
 
@@ -23,5 +23,5 @@ func (u *User) HashPassword(password string) {
       log.Fatal(hashError)
       panic(hashError) //this is a panic because bcrypt errors on invalid costs
   }
-  u.Password = hashedPassword
+  u.PasswordHash = hashedPassword
 }

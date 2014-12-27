@@ -86,6 +86,9 @@ func CreateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) 
     user.Created = currentTime
     user.Updated = currentTime
 
+    var password = r.FormValue("password")
+    user.HashPassword(password)
+
     dbError := dbmap.Insert(user)
     if dbError != nil {
       log.Fatal(dbError)
