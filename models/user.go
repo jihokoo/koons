@@ -13,15 +13,17 @@ type User struct {
   UserName string
   FirstName string
   LastName string
+  Password string `db:"-"`
   PasswordHash []byte
   // TODO: hash password
 }
 
-func (u *User) HashPassword(password string) {
-  hashedPassword, hashError := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+func (u *User) HashPassword() {
+  hashedPassword, hashError := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
   if hashError != nil {
       log.Fatal(hashError)
       panic(hashError) //this is a panic because bcrypt errors on invalid costs
   }
+
   u.PasswordHash = hashedPassword
 }

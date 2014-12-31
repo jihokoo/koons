@@ -9,13 +9,20 @@ import (
 )
 
 func DataBaseStart() (*gorp.DbMap) {
-  db, err := sql.Open("postgres", "dbname=koons user=jihokoo sslmode=disable port=5432")
-  if err != nil {
-    log.Fatal(err)
+  db, dbError := sql.Open("postgres", "dbname=koons user=jihokoo sslmode=disable port=5432")
+  if dbError != nil {
+    log.Fatal(dbError)
   }
 
   dbmap := &gorp.DbMap{Db: db, Dialect: gorp.PostgresDialect{}}
 
-  dbmap.AddTable(models.User{}).SetKeys(true, "Id")
+  usersTable := dbmap.AddTable(models.User{}).SetKeys(true, "Id")
+  usersTable.ColMap("Id").SetUnique(true)
+  usersTable.ColMap("UserName").SetUnique(true)
+
+  dbError = dbmap.CreateTablesIfNotExists()
+  if dbError != nil {
+    log.Fatal(dbError)
+  }
   return dbmap
 }

@@ -75,7 +75,7 @@ func CreateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) 
       log.Fatal(readError)
     }
 
-    // TODO: validations
+    // TODO: validations (validate using user struct)
     var user *models.User
     jsError := json.Unmarshal(body, &user)
     if jsError != nil {
@@ -86,8 +86,7 @@ func CreateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) 
     user.Created = currentTime
     user.Updated = currentTime
 
-    var password = r.FormValue("password")
-    user.HashPassword(password)
+    user.HashPassword()
 
     dbError := dbmap.Insert(user)
     if dbError != nil {
