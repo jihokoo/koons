@@ -82,6 +82,7 @@ func CreateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) 
       log.Fatal(jsError)
     }
 
+    // TODO: switch to ISO-8601 timestamps
     var currentTime int64 = time.Now().Unix()
     user.Created = currentTime
     user.Updated = currentTime
