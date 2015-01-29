@@ -7,5 +7,5 @@
 ####User:
 
 - Controller (getOne, getAll, create, update, delete)
-- Model (userName, firstName, lastName, created, updated)
-- Routes
+- Model (userName, firstName, lastName, passwordHash, created, updated)
+- Routes (GET: /user, GET: /user/{userId}, POST: /user, PUT: /user/{userId}, DELETE: /user/{userId})
