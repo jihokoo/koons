@@ -5,6 +5,7 @@ import (
   "github.com/gorilla/mux"
   "fmt"
   "./config"
+  "os"
 )
 
 func main() {
@@ -21,6 +22,8 @@ func main() {
   config.RegisterUserRoutes(user, dbmap)
 
   http.Handle("/", r)
-  fmt.Println("Starting server on :9000")
-  http.ListenAndServe(":9000", nil)
+
+  port := os.Getenv("PORT")
+  fmt.Println("Starting server on :" + port)
+  http.ListenAndServe(":" + port, nil)
 }
