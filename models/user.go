@@ -2,12 +2,12 @@ package models
 
 import (
   "golang.org/x/crypto/bcrypt"
+  "labix.org/v2/mgo/bson"
   "log"
 )
 
 type User struct {
-  // TODO: make the id a universally unique id
-  Id int64
+  Id bson.ObjectId `bson:"_id,omitempty"`
   Created string
   Updated string
   UserName string
@@ -15,7 +15,6 @@ type User struct {
   LastName string
   Password string `db:"-"`
   PasswordHash []byte
-  // TODO: hash password
 }
 
 func (u *User) HashPassword() {

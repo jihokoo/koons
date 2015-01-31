@@ -10,6 +10,7 @@ import (
   "github.com/gorilla/mux"
   "github.com/coopernurse/gorp"
   "strconv"
+  "labix.org/v2/mgo/bson"
 )
 
 func usersHandler(cb1 func(r *http.Request) *models.User, cb2 func(r *http.Request) *[]models.User) func(w http.ResponseWriter, r*http.Request) {
@@ -87,6 +88,7 @@ func CreateUser(dbmap *gorp.DbMap) func(w http.ResponseWriter, r *http.Request) 
     user.Updated = currentTime
 
     user.HashPassword()
+    user.Id = bson.NewObjectID()
 
     dbError := dbmap.Insert(user)
     if dbError != nil {
