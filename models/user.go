@@ -2,7 +2,7 @@ package models
 
 import (
   "golang.org/x/crypto/bcrypt"
-  "labix.org/v2/mgo/bson"
+  "gopkg.in/mgo.v2/bson"
   "log"
 )
 
@@ -20,7 +20,7 @@ type User struct {
 func (u *User) HashPassword() {
   hashedPassword, hashError := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
   if hashError != nil {
-      log.Fatal(hashError)
+      log.Print(hashError)
       panic(hashError) //this is a panic because bcrypt errors on invalid costs
   }
 
